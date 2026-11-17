@@ -1,18 +1,32 @@
-const asyncHandler = require("../utils/asyncHandler");
-const { requirePositiveInt } = require("../utils/validators");
+const { sendErrorResponse, sendResponse, createError } = require("../utils/response");
 
-const getAllUsers = asyncHandler((req, res) => {
-  res.send("Fetching all users");
-});
+const getAllUsers = (req, res) => {
+  try {
+    sendResponse(res, "Fetching all users");
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
-const addUser = asyncHandler((req, res) => {
-  res.send("Adding a new user");
-});
+const addUser = (req, res) => {
+  try {
+    sendResponse(res, "Adding a new user", 201);
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
-const getUserById = asyncHandler((req, res) => {
-  const id = requirePositiveInt(req.params.id, "id");
-  res.send(`Fetching user with ID: ${id}`);
-});
+const getUserById = (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw createError("User id must be a positive integer", 400);
+    }
+    sendResponse(res, `Fetching user with ID: ${id}`);
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
 module.exports = {
   getAllUsers,

@@ -1,33 +1,47 @@
 const productService = require("../services/productService");
-const asyncHandler = require("../utils/asyncHandler");
-const {
-  requirePositiveInt,
-  requireNonEmptyString,
-} = require("../utils/validators");
+const { sendErrorResponse, sendResponse, createError } = require("../utils/response");
 
-const getAllProducts = asyncHandler((req, res) => {
-  res.send(productService.getAllProducts());
-});
+const getAllProducts = (req, res) => {
+  try {
+    sendResponse(res, productService.getAllProducts());
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
-const addProduct = asyncHandler((req, res) => {
-  res.send(productService.addProduct());
-});
+const addProduct = (req, res) => {
+  try {
+    sendResponse(res, productService.addProduct(), 201);
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
-const getProductById = asyncHandler((req, res) => {
-  const id = requirePositiveInt(req.params.id, "id");
-  res.send(productService.getProductById(id));
-});
+const getProductById = (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw createError("Product id must be a positive integer", 400);
+    }
+    sendResponse(res, productService.getProductById(id));
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
-const createProduct = asyncHandler((req, res) => {
-  const productName = requireNonEmptyString(
-    req.body && req.body.productName,
-    "productName"
-  );
-
-  const product = productService.createProduct(productName);
-  console.log("Product added:", product);
-  res.status(201).json(product);
-});
+const createProduct = (req, res) => {
+  try {
+    const productName = req.body && req.body.productName;
+    if (typeof productName !== "string" || !productName.trim()) {
+      throw createError("productName is required", 400);
+    }
+    const product = productService.createProduct(productName.trim());
+    console.log("Product added:", product);
+    sendResponse(res, product, 201);
+  } catch (err) {
+    sendErrorResponse(res, err);
+  }
+};
 
 module.exports = {
   getAllProducts,

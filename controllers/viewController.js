@@ -1,11 +1,11 @@
 const path = require("path");
-const asyncHandler = require("../utils/asyncHandler");
+const { sendErrorResponse } = require("../utils/response");
 
-const getProductsPage = asyncHandler((req, res, next) => {
+const getProductsPage = (req, res) => {
   res.sendFile(path.join(__dirname, "..", "view", "products.html"), (err) => {
-    if (err) next(err);
+    if (err) sendErrorResponse(res, err);
   });
-});
+};
 
 module.exports = {
   getProductsPage,
