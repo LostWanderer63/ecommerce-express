@@ -5,6 +5,7 @@ const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const apiRoutes = require("./routes/apiRoutes");
 const { sendErrorResponse, createError } = require("./utils/response");
+const { testConnection } = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,13 @@ app.use((req, res) => {
   );
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`E-Commerce API running on http://localhost:${PORT}`);
+
+  try {
+    await testConnection();
+    console.log("Connected to MySQL");
+  } catch (err) {
+    console.error("MySQL connection failed:", err.code || err.message);
+  }
 });
