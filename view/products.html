@@ -29,7 +29,7 @@
         form.reset();
       } catch (error) {
         result.textContent = error.response
-          ? error.response.data.error
+          ? error.response.data.error.message
           : "Could not reach the server";
       }
     });
